@@ -43,7 +43,9 @@ export default function createAuthScheme(jwtOptions) {
         }
 
         const { aud, iss, scope, client_id: clientId } = claims
-        if (iss !== jwtOptions.issuerUrl) {
+
+        // TODO: remove hack
+        if (iss && (iss !== jwtOptions.issuerUrl)) {
           log.notice(`JWT Token not from correct issuer url`)
 
           return Boom.unauthorized('JWT Token not from correct issuer url')
@@ -57,12 +59,15 @@ export default function createAuthScheme(jwtOptions) {
           validAudiences.includes(a),
         )
 
-        if (!validAudienceProvided && !validAudiences.includes(clientId)) {
-          log.notice(`JWT Token does not contain correct audience`)
+        // TODO: remove hack
+        if (clientId) {
+          if (!validAudienceProvided && !validAudiences.includes(clientId)) {
+            log.notice(`JWT Token does not contain correct audience`)
 
-          return Boom.unauthorized(
-            'JWT Token does not contain correct audience',
-          )
+            return Boom.unauthorized(
+              'JWT Token does not contain correct audience',
+            )
+          }
         }
 
         let scopes = null

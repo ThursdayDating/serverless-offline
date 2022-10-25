@@ -87,6 +87,8 @@ export default class LambdaProxyIntegrationEventV2 {
       if (!headers['content-type']) {
         headers['content-type'] = 'application/json'
       }
+    } else if (body === undefined || body === '') {
+      body = null
     }
 
     // clone own props
@@ -153,6 +155,10 @@ export default class LambdaProxyIntegrationEventV2 {
         authorizer:
           authAuthorizer ||
           assign(authContext, {
+            // TODO: remove hack
+            lambda: {
+              ...claims
+            },
             jwt: {
               claims,
               scopes,
