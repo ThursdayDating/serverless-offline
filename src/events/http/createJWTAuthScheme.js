@@ -35,6 +35,13 @@ export default function createAuthScheme(jwtOptions) {
       }
 
       try {
+
+        // This is a hack for our fixed bearer auth
+        if (jwtOptions?.skipJWTDecode) {
+          log.notice(`Skipping JWT decode - using fixed bearer setup`);
+          return h.authenticated({ credentials: {} });
+        }
+
         const claims = decodeJwt(jwtToken)
 
         const expirationDate = new Date(claims.exp * 1000)
